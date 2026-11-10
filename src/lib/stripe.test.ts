@@ -9,10 +9,19 @@ describe("isTestKey", () => {
   it("accepts sandbox secret and restricted keys", () => {
     expect(isTestKey("sk_test_51Abcdefghijkl")).toBe(true);
     expect(isTestKey("rk_test_51Abcdefghijkl")).toBe(true);
+    expect(isTestKey("rkcs_test_51Abcdefghijkl")).toBe(true);
   });
 
   it("refuses live keys, publishable keys and junk", () => {
-    for (const bad of ["sk_live_51Abcdefghijkl", "rk_live_51Abcdefghijkl", "pk_test_51Abcdefghijkl", "", "sk_test_"]) {
+    for (const bad of [
+      "sk_live_51Abcdefghijkl",
+      "rk_live_51Abcdefghijkl",
+      "rkcs_live_51Abcdefghijkl",
+      "pk_test_51Abcdefghijkl",
+      "xrkcs_test_51Abcdefghijkl",
+      "",
+      "sk_test_",
+    ]) {
       expect(isTestKey(bad), bad).toBe(false);
     }
     expect(isTestKey(undefined)).toBe(false);

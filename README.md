@@ -49,7 +49,7 @@ Every object Kape creates is tagged `metadata.app = "kape"`, and reads filter on
 ### Security choices
 
 - **Prices live on the server.** The browser sends only `coffees` (1, 3 or 5) or `tier` (`regular`, `barista`). Anything else is rejected, including `toString` and other inherited object keys.
-- **Test keys only.** Keys that don't start with `sk_test_` or `rk_test_` are refused. There is no live-key code path.
+- **Test keys only.** Keys that don't start with `sk_test_`, `rk_test_` or `rkcs_test_` (the limited key an unclaimed sandbox gives you) are refused. There is no live-key code path.
 - **Signed webhooks.** The signature is checked against the raw request body with `STRIPE_WEBHOOK_SECRET`.
 - **No trusted URLs.** The thanks page reads amounts from Stripe, and session ids must match `cs_test_…`. Notices map fixed query flags to fixed copy, so URL text never reaches the page.
 - **Private supports stay private.** The public wall shows "Someone" with no note. Private details are stripped on the server before rendering.
@@ -70,7 +70,7 @@ cp .env.example .env.local
 stripe sandbox create
 ```
 
-This creates an anonymous sandbox with no Dashboard, which expires after 7 days. Copy its secret key (`sk_test_…`) into `.env.local` as `STRIPE_SECRET_KEY`.
+This creates an anonymous sandbox with no Dashboard, which expires after 7 days. Copy its secret key (`rkcs_test_…` for an unclaimed sandbox, or `sk_test_…`) into `.env.local` as `STRIPE_SECRET_KEY`.
 
 Because you never ran `stripe login`, give the CLI the key for the rest of this session:
 

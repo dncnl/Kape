@@ -28,7 +28,7 @@ A "Buy Me a Coffee" page for Filipino creators, with a mascot named **Tasa**. Po
 
 - **Stripe is the database.** Completed Checkout Sessions are supporters, Subscriptions are members. Name, note, coffee count, tier and privacy travel as Checkout metadata (`metadata.app = "kape"`).
 - **Prices live on the server.** The browser only sends `coffees` (1, 3 or 5) or `tier` (`regular`, `barista`). Everything goes through `src/lib/pricing.ts`. Never read an amount from a request.
-- **Test keys only.** `src/lib/stripe.ts` refuses any key that doesn't start with `sk_test_` or `rk_test_`. Never add a live-key code path.
+- **Test keys only.** `src/lib/stripe.ts` refuses any key that doesn't start with `sk_test_`, `rk_test_` or `rkcs_test_` (unclaimed sandbox key). Never add a live-key code path.
 - **Graceful fallback.** Any missing key, bad key or Stripe error means demo mode: sample data plus sleepy Tasa. Pages must never throw because Stripe is down.
 - Caching: `cacheComponents` is **off** on purpose so `/` can use `export const revalidate = 60` (see `node_modules/next/dist/docs/01-app/02-guides/caching-without-cache-components.md`). The webhook calls `revalidatePath('/')` and `revalidatePath('/dashboard')`.
 - Never echo URL text onto a page. Notices map fixed query keys to fixed copy.

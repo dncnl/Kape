@@ -1,9 +1,13 @@
 import "server-only";
 import Stripe from "stripe";
 
-/** Only sandbox/test keys are ever accepted. There is no live-key path. */
+/**
+ * Only sandbox/test keys are ever accepted. There is no live-key path.
+ * `rkcs_test_` is the limited-permission key `stripe sandbox create` issues for an
+ * unclaimed (claimable) sandbox; it can do everything Kape needs.
+ */
 export function isTestKey(key: string | undefined | null): key is string {
-  return typeof key === "string" && /^(sk|rk)_test_[A-Za-z0-9_]{8,}$/.test(key.trim());
+  return typeof key === "string" && /^(sk|rk|rkcs)_test_[A-Za-z0-9_]{8,}$/.test(key.trim());
 }
 
 let client: Stripe | null = null;
