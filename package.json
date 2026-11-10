@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "build:offline": "node scripts/offline-fonts.mjs build",
     "dev:offline": "node scripts/offline-fonts.mjs dev"
   },
