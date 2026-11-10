@@ -45,3 +45,6 @@ next-env.d.ts
 
 # offline font cache (scripts/offline-fonts.mjs)
 /.fonts-cache/
+
+# personal checklist, never committed
+/MY_STEPS.md
