@@ -1,26 +1,305 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── Palette ─────────────────────────────────────────────── */
+@theme {
+  --color-paper: #f5f1ea;
+  --color-milk: #fffbf5;
+  --color-espresso: #1b1410;
+  --color-roast: #5a3a26;
+  --color-crema: #c8834a;
+  --color-blush: #f2a28a;
+  --color-line: #e6ddd0;
+  /* Secondary text, 6:1 on milk (AA). */
+  --color-muted: #6e5d50;
+  /* Cup body inside Tasa. */
+  --color-cup: #fff8ee;
+
+  --shadow-soft: 0 1px 2px rgb(27 20 16 / 0.04), 0 18px 40px -24px rgb(27 20 16 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(27 20 16 / 0.05), 0 28px 50px -24px rgb(27 20 16 / 0.26);
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
+/* Fonts come from next/font CSS variables on <html>, so resolve them at use time. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Base ────────────────────────────────────────────────── */
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-espresso);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    position: relative;
+    overflow-x: clip;
+  }
+
+  /* Subtle grain: tiny inline SVG noise at very low opacity. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .06  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  body > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-crema) 35%, transparent);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-crema);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Components ──────────────────────────────────────────── */
+@layer components {
+  .skip-link {
+    position: fixed;
+    left: 1rem;
+    top: 0.75rem;
+    z-index: 50;
+    transform: translateY(-200%);
+    border-radius: 9999px;
+    background: var(--color-espresso);
+    color: var(--color-milk);
+    padding: 0.6rem 1.1rem;
+    font-weight: 500;
+    transition: transform 0.2s var(--ease-out-soft);
+  }
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
+  .card {
+    border-radius: var(--radius-3xl);
+    border: 1px solid var(--color-line);
+    background: var(--color-milk);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .card-lift {
+    transition:
+      transform 0.35s var(--ease-out-soft),
+      box-shadow 0.35s var(--ease-out-soft);
+  }
+  @media (hover: hover) {
+    .card-lift:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lift);
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.85rem 1.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    transition:
+      transform 0.2s var(--ease-out-soft),
+      background-color 0.2s,
+      box-shadow 0.2s;
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn-primary {
+    background: var(--color-espresso);
+    color: var(--color-milk);
+  }
+  .btn-primary:hover {
+    background: var(--color-roast);
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-line);
+    background: var(--color-milk);
+    color: var(--color-espresso);
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-roast);
+  }
+
+  .field {
+    width: 100%;
+    border-radius: 1rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-paper);
+    padding: 0.75rem 1rem;
+    color: var(--color-espresso);
+    transition:
+      border-color 0.2s,
+      background-color 0.2s;
+  }
+  .field::placeholder {
+    color: color-mix(in srgb, var(--color-muted) 80%, transparent);
+  }
+  .field:hover {
+    border-color: color-mix(in srgb, var(--color-roast) 40%, var(--color-line));
+  }
+  .field:focus-visible {
+    background: var(--color-milk);
+    border-color: var(--color-crema);
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+}
+
+/* ── Motion ──────────────────────────────────────────────── */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fade-up {
+  animation: fade-up 0.8s var(--ease-out-soft) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes chip-spring {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  70% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+.chip-spring {
+  animation: chip-spring 0.45s var(--ease-spring);
+}
+
+/* Tasa */
+@keyframes tasa-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes tasa-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+@keyframes tasa-steam {
+  0% { opacity: 0; transform: translateY(6px); }
+  30% { opacity: var(--steam-opacity, 1); }
+  100% { opacity: 0; transform: translateY(-12px); }
+}
+@keyframes tasa-hop {
+  0%, 100% { translate: 0 0; }
+  30% { translate: 0 -12px; }
+  55% { translate: 0 0; }
+  75% { translate: 0 -4px; }
+}
+@keyframes tasa-wiggle {
+  0%, 100% { rotate: 0deg; }
+  20% { rotate: -7deg; }
+  45% { rotate: 6deg; }
+  70% { rotate: -3deg; }
+}
+@keyframes tasa-z {
+  0% { opacity: 0; transform: translate(0, 4px); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(6px, -14px); }
+}
+@keyframes tasa-sparkle {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.55; transform: scale(0.75) rotate(20deg); }
+}
+
+.tasa-body { animation: tasa-breathe 4s ease-in-out infinite; }
+.tasa[data-mood="sleepy"] .tasa-body { animation-duration: 6s; }
+.tasa-eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tasa-blink 4.6s ease-in-out infinite;
+}
+.tasa-steam path {
+  transform-box: fill-box;
+  animation: tasa-steam 3s ease-out infinite;
+}
+.tasa-steam path:nth-child(2) { animation-delay: 1s; }
+.tasa-steam path:nth-child(3) { animation-delay: 2s; }
+.tasa-hop { display: inline-block; animation: tasa-hop 0.65s var(--ease-out-soft); }
+.tasa-wiggle {
+  display: inline-block;
+  transform-origin: 50% 90%;
+  animation: tasa-wiggle 0.55s ease-in-out;
+}
+.tasa-z {
+  transform-box: fill-box;
+  animation: tasa-z 3.6s ease-in-out infinite;
+}
+.tasa-z:nth-of-type(2) { animation-delay: 1.8s; }
+.tasa-sparkle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tasa-sparkle 1.8s ease-in-out infinite;
+}
+
+/* Coffee-bean confetti (thanks page), max 1.5s. */
+@keyframes bean-fall {
+  0% { opacity: 0; transform: translate3d(0, -20vh, 0) rotate(0deg); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--drift, 0px), 85vh, 0) rotate(var(--spin, 360deg)); }
+}
+.bean {
+  position: absolute;
+  top: 0;
+  width: 14px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-roast);
+  opacity: 0;
+  animation: bean-fall var(--dur, 1.4s) cubic-bezier(0.3, 0.6, 0.5, 1) var(--delay, 0s) forwards;
+}
+.bean::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 15%;
+  bottom: 15%;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-crema) 70%, var(--color-roast));
+  transform: rotate(12deg);
+}
+
+/* ── Reduced motion: everything stops. ───────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .bean {
+    display: none;
+  }
 }
