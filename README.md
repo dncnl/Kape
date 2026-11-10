@@ -83,7 +83,8 @@ export STRIPE_API_KEY=sk_test_...        # PowerShell: $env:STRIPE_API_KEY="sk_t
 In a second terminal (with `STRIPE_API_KEY` set):
 
 ```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
+stripe listen --forward-to localhost:3000/api/stripe/webhook \
+  --events checkout.session.completed,checkout.session.async_payment_succeeded,invoice.paid,customer.subscription.updated,customer.subscription.deleted,charge.refunded
 ```
 
 It prints a signing secret (`whsec_…`). Put it in `.env.local` as `STRIPE_WEBHOOK_SECRET`.

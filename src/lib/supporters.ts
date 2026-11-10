@@ -124,6 +124,10 @@ export function subscriptionToMember(sub: Stripe.Subscription): Member | null {
   const status = memberStatus(sub.status);
   if (!status) return null;
   const item = sub.items?.data?.[0];
+  // Recent API versions record a portal "cancel at period end" as `cancel_at` (a timestamp)
+  // and leave `cancel_at_period_end` false, so treat either as a scheduled cancellation.
+  const cancelAt = sub.cancel_at ?? null;
+  const periodEnd = cancelAt ?? item?.current_period_end ?? null;
   return {
     id: sub.id,
     createdAt: sub.created * 1000,
@@ -131,8 +135,8 @@ export function subscriptionToMember(sub: Stripe.Subscription): Member | null {
     name: cleanText(meta.name, NAME_MAX),
     amountCents: item?.price?.unit_amount ?? TIERS[tier].priceCents,
     status,
-    cancelAtPeriodEnd: sub.cancel_at_period_end,
-    currentPeriodEnd: item?.current_period_end ? item.current_period_end * 1000 : null,
+    cancelAtPeriodEnd: sub.cancel_at_period_end || cancelAt !== null,
+    currentPeriodEnd: periodEnd ? periodEnd * 1000 : null,
   };
 }
 

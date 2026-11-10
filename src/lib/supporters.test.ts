@@ -136,6 +136,22 @@ describe("subscriptionToMember", () => {
     expect(subscriptionToMember(sub("incomplete"))).toBeNull();
   });
 
+  it("treats cancel_at (how the portal schedules a cancel) as ending at that date", () => {
+    const m = subscriptionToMember(sub("active", { cancel_at_period_end: false, cancel_at: 1_762_000_000 }));
+    expect(m?.status).toBe("active");
+    expect(m?.cancelAtPeriodEnd).toBe(true);
+    expect(m?.currentPeriodEnd).toBe(1_762_000_000_000);
+  });
+
+  it("still honours the legacy cancel_at_period_end flag", () => {
+    const m = subscriptionToMember(sub("active", { cancel_at_period_end: true, cancel_at: null }));
+    expect(m?.cancelAtPeriodEnd).toBe(true);
+  });
+
+  it("is not scheduled to cancel when neither field is set", () => {
+    expect(subscriptionToMember(sub("active", { cancel_at: null }))?.cancelAtPeriodEnd).toBe(false);
+  });
+
   it("ignores unknown tiers and other apps", () => {
     expect(subscriptionToMember(sub("active", { metadata: { app: "kape", tier: "toString" } }))).toBeNull();
     expect(subscriptionToMember(sub("active", { metadata: { app: "x", tier: "regular" } }))).toBeNull();
