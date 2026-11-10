@@ -169,6 +169,17 @@
   }
 }
 
+/* Support button total follows the checked chip, no JS needed.
+   Default shows $9 (3 coffees) so browsers without :has() still read sensibly. */
+.support-total { display: none; }
+.support-total[data-for="3"] { display: inline; }
+.support-form:has(input[name="coffees"]:checked) .support-total { display: none; }
+.support-form:has(input[name="coffees"][value="1"]:checked) .support-total[data-for="1"],
+.support-form:has(input[name="coffees"][value="3"]:checked) .support-total[data-for="3"],
+.support-form:has(input[name="coffees"][value="5"]:checked) .support-total[data-for="5"] {
+  display: inline;
+}
+
 /* ── Motion ──────────────────────────────────────────────── */
 @keyframes fade-up {
   from {
@@ -191,7 +202,8 @@
   70% { transform: scale(0.97); }
   100% { transform: scale(1); }
 }
-.chip-spring {
+.chip-spring,
+input:checked + .chip {
   animation: chip-spring 0.45s var(--ease-spring);
 }
 
